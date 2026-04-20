@@ -102,7 +102,30 @@ class DepthVideo:
             self.temp_y_cdot = torch.zeros(buffer, ht//self.down_scale, wd//self.down_scale, device=self.device, dtype=torch.float).share_memory_()
         else:
             self.dino_feats = None
-            self.dino_feats_resize = None
+            self.dino_feats_resize = torch.zeros(
+                buffer,
+                1,
+                ht // self.down_scale,
+                wd // self.down_scale,
+                device=self.device,
+                dtype=torch.float,
+            ).share_memory_()
+            self.uncertainties = torch.ones(
+                buffer,
+                ht // self.down_scale,
+                wd // self.down_scale,
+                device=self.device,
+                dtype=torch.float,
+            ).share_memory_()
+            self.affine_weights = torch.zeros((1,), device=self.device, dtype=torch.float)
+            self.enable_affine_transform = False
+            self.temp_y_cdot = torch.zeros(
+                buffer,
+                ht // self.down_scale,
+                wd // self.down_scale,
+                device=self.device,
+                dtype=torch.float,
+            ).share_memory_()
 
     def get_lock(self):
         return self.counter.get_lock()
